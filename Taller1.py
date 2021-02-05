@@ -40,7 +40,7 @@ ims = flopy.mf6.ModflowIms(sim, pname="ims", complexity="SIMPLE")
 
 #Crea el modelo de flujo de agua 
 model_nam_file = "{}.nam".format(name)
-gwf = flopy.mf6.ModflowGwf(sim, modelname=name, model_nam_file=model_nam_file)
+gwf = flopy.mf6.ModflowGwf(sim, modelname=name, model_nam_file=model_nam_file, save_flows =True)
 
 bot = np.linspace(-H / Nlay, -H, Nlay)#La altura va desde -H/#de celdas hasta el fondo total, en el número de capa que tenemos (Nlay)
 delrow = delcol = L / (N - 1) #Espesor de filas
@@ -63,7 +63,7 @@ ic = flopy.mf6.ModflowGwfic(gwf, pname="ic", strt=start)
 #Controla el flujo entre celdas
 #k=np.ones([10,N,N])                      #PONE LA PERMEABILIDAD COMO UNA MATRIZ
 #k[1,:,:]=5e-3                            #LE ASIGNA UN VALOR DE K A UNA CAPA
-npf = flopy.mf6.ModflowGwfnpf(gwf, icelltype=1, k=k, save_flows=True)
+npf = flopy.mf6.ModflowGwfnpf(gwf, icelltype=1, k=k, save_flows=True, save_specific_discharge=True)
 
 #RECARGA
 rec= flopy.mf6.ModflowGwfrcha(gwf, recharge=0.002)
@@ -141,3 +141,12 @@ fig = plt.figure(figsize=(5, 2.5))
 ax = fig.add_subplot(1, 1, 1, aspect="auto")
 c = ax.contour(x, z, h[:, 50, :], np.arange(90, 100.1, 0.2), colors="cyan")
 plt.clabel(c, fmt="%1.1f")
+
+plt.show()
+head = flopy.utils.HeadFile('Workspace/tutorial01_mf6.hds').get_data()
+cbb = flopy.utils.CellBudgetFile('Workspace/tutorial01_mf6.cbb', precision='double')
+spdis = cbb.get_data(text='DATA-SPDIS')[0]
+pmv = flopy.plot.PlotMapView(gwf)
+pmv.plot_array(head)
+pmv.contour_array(head, levels=[.2, .4, .6, .8], linewidths=15.)
+pmv.plot_specific_discharge(spdis, istep=5, jstep = 5 ,color='blue')
