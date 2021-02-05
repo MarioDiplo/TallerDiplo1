@@ -65,11 +65,13 @@ ic = flopy.mf6.ModflowGwfic(gwf, pname="ic", strt=start)
 #k[1,:,:]=5e-3                            #LE ASIGNA UN VALOR DE K A UNA CAPA
 npf = flopy.mf6.ModflowGwfnpf(gwf, icelltype=1, k=k, save_flows=True)
 
+#RECARGA
+rec= flopy.mf6.ModflowGwfrcha(gwf, recharge=0.002)
 
 #
 chd_rec = []
 chd_rec.append(((0, int(N / 4), int(N / 4)), h2))
-#chd_rec.append(((1, int(3*N / 4), int(3*N / 4)), h2-5)) #AGREGA POZOS
+chd_rec.append(((1, int(4*N / 5), int(3*N / 7)), h2-2)) #AGREGA POZOS
 for layer in range(0, Nlay):
     for row_col in range(0, N):
         chd_rec.append(((layer, row_col, 0), h1))
@@ -122,7 +124,7 @@ x = y = np.linspace(0, L, N)
 y = y[::-1]
 fig = plt.figure(figsize=(6, 6))
 ax = fig.add_subplot(1, 1, 1, aspect="equal")
-c = ax.contour(x, y, h[0], np.arange(90, 100.1, 0.2), colors="black")
+c = ax.contour(x, y, h[0], np.arange(90, 100.1, 0.2), colors="blue")
 plt.clabel(c, fmt="%2.1f")
 
 #Plot a Map of Layer 10
@@ -130,12 +132,12 @@ x = y = np.linspace(0, L, N)
 y = y[::-1]
 fig = plt.figure(figsize=(6, 6))
 ax = fig.add_subplot(1, 1, 1, aspect="equal")
-c = ax.contour(x, y, h[-1], np.arange(90, 100.1, 0.2), colors="black")
+c = ax.contour(x, y, h[-1], np.arange(90, 100.1, 0.2), colors="red")
 plt.clabel(c, fmt="%1.1f")
 
 #Plot a Cross-section along row 51
 z = np.linspace(-H / Nlay / 2, -H + H / Nlay / 2, Nlay)
 fig = plt.figure(figsize=(5, 2.5))
 ax = fig.add_subplot(1, 1, 1, aspect="auto")
-c = ax.contour(x, z, h[:, 50, :], np.arange(90, 100.1, 0.2), colors="black")
+c = ax.contour(x, z, h[:, 50, :], np.arange(90, 100.1, 0.2), colors="cyan")
 plt.clabel(c, fmt="%1.1f")
