@@ -65,11 +65,13 @@ ic = flopy.mf6.ModflowGwfic(gwf, pname="ic", strt=start)
 #k[1,:,:]=5e-3                            #LE ASIGNA UN VALOR DE K A UNA CAPA
 npf = flopy.mf6.ModflowGwfnpf(gwf, icelltype=1, k=k, save_flows=True)
 
+#RECARGA
+rec= flopy.mf6.ModflowGwfrcha(gwf, recharge=0.002)
 
 #
 chd_rec = []
 chd_rec.append(((0, int(N / 4), int(N / 4)), h2))
-#chd_rec.append(((1, int(3*N / 4), int(3*N / 4)), h2-5)) #AGREGA POZOS
+chd_rec.append(((1, int(4*N / 5), int(3*N / 7)), h2-2)) #AGREGA POZOS
 for layer in range(0, Nlay):
     for row_col in range(0, N):
         chd_rec.append(((layer, row_col, 0), h1))
